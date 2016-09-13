@@ -26,3 +26,7 @@ How do levels of PM2.5 and CO compare among houses who use traditional cookstove
 ###Bonus:
 * Merge CO and PM data by household ID, explore correlation between contaminant levels and differences in this correlation by geography (possible reasons for variation could be urban vs. rural house construction, weather differences, etc)
 * Create a package to clean, graph, and analyse PdR(PM) and CO(Lascar) raw data 
+
+###Goals for the next week
+1. Process raw data into tidy datasets
+2. Explore whether there are existing R packages that process data from these instruments
