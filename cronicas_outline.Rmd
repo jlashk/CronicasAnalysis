@@ -1,7 +1,7 @@
 ---
 title: "ADS1 outline - Cronicas study"
 author: "Josiah Kephart"
-date: "September 13, 2016"
+date: "September 20, 2016"
 output: html_document
 ---
 
@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ##Project outline
 
-Cronicas is a study of household air pollution and clinical outcomes which was conducted in Lima and Puno, Peru in 2014-2015. 
+Cronicas is a study of household air pollution and clinical outcomes in Lima and Puno, Peru in 2014-2015. 
 
 48 hour direct-reading measurements of PM2.5 and CO at one minute temporal resolution were taken in roughly 800 households in Lima (urban) and 800 households in Puno (rural) who used traditional, biomass stoves for cooking.
 
@@ -25,8 +25,10 @@ How do levels of PM2.5 and CO compare among houses who use traditional cookstove
 
 ###Bonus:
 * Merge CO and PM data by household ID, explore correlation between contaminant levels and differences in this correlation by geography (possible reasons for variation could be urban vs. rural house construction, weather differences, etc)
-* Create a package to clean, graph, and analyse PdR(PM) and CO(Lascar) raw data 
+* Create a package to clean, graph, and analyse PdR and Lascar-USB raw data 
+
+###Progress this week
+* Cleaned files names by extracting info from file names using regular expressions and transforming to standard format (household ID, contaminant, device ID, sample date)
 
 ###Goals for the next week
-1. Process raw data into tidy datasets
-2. Explore whether there are existing R packages that process data from these instruments
+* Read files, look for missing/weird data, begin to create summary statistics

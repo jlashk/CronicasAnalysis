@@ -11,7 +11,7 @@
 
 <meta name="author" content="Josiah Kephart" />
 
-<meta name="date" content="2016-09-13" />
+<meta name="date" content="2016-09-20" />
 
 <title>ADS1 outline - Cronicas study</title>
 
@@ -118,14 +118,14 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">ADS1 outline - Cronicas study</h1>
 <h4 class="author"><em>Josiah Kephart</em></h4>
-<h4 class="date"><em>September 13, 2016</em></h4>
+<h4 class="date"><em>September 20, 2016</em></h4>
 
 </div>
 
 
 <div id="project-outline" class="section level2">
 <h2>Project outline</h2>
-<p>Cronicas is a study of household air pollution and clinical outcomes which was conducted in Lima and Puno, Peru in 2014-2015.</p>
+<p>Cronicas is a study of household air pollution and clinical outcomes in Lima and Puno, Peru in 2014-2015.</p>
 <p>48 hour direct-reading measurements of PM2.5 and CO at one minute temporal resolution were taken in roughly 800 households in Lima (urban) and 800 households in Puno (rural) who used traditional, biomass stoves for cooking.</p>
 <div id="research-question" class="section level3">
 <h3>Research question</h3>
@@ -143,15 +143,20 @@ $(document).ready(function () {
 <h3>Bonus:</h3>
 <ul>
 <li>Merge CO and PM data by household ID, explore correlation between contaminant levels and differences in this correlation by geography (possible reasons for variation could be urban vs. rural house construction, weather differences, etc)</li>
-<li>Create a package to clean, graph, and analyse PdR(PM) and CO(Lascar) raw data</li>
+<li>Create a package to clean, graph, and analyse PdR and Lascar-USB raw data</li>
+</ul>
+</div>
+<div id="progress-this-week" class="section level3">
+<h3>Progress this week</h3>
+<ul>
+<li>Cleaned files names by extracting info from file names using regular expressions and transforming to standard format (household ID, contaminant, device ID, sample date)</li>
 </ul>
 </div>
 <div id="goals-for-the-next-week" class="section level3">
 <h3>Goals for the next week</h3>
-<ol style="list-style-type: decimal">
-<li>Process raw data into tidy datasets</li>
-<li>Explore whether there are existing R packages that process data from these instruments</li>
-</ol>
+<ul>
+<li>Read files, look for missing/weird data, begin to create summary statistics</li>
+</ul>
 </div>
 </div>
 
