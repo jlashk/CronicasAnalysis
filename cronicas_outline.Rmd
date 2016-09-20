@@ -21,14 +21,10 @@ How do levels of PM2.5 and CO compare among houses who use traditional cookstove
 
 1. Process 1600 raw data files into tidy datasets
 2. Create summary measures of pollutant levels over time
-3. Conduct analysis comparing pollution across geographic locations
-
-###Bonus:
-* Merge CO and PM data by household ID, explore correlation between contaminant levels and differences in this correlation by geography (possible reasons for variation could be urban vs. rural house construction, weather differences, etc)
-* Create a package to clean, graph, and analyse PdR and Lascar-USB raw data 
+3. Conduct analysis comparing baseline pollution across geographic locations
 
 ###Progress this week
-* Cleaned files names by extracting info from file names using regular expressions and transforming to standard format (household ID, contaminant, device ID, sample date)
+* Cleaned files names by extracting info from file names using regular expressions and transforming to standardized format (household ID, contaminant, device ID, sample date)
 
 ###Goals for the next week
 * Read files, look for missing/weird data, begin to create summary statistics
