@@ -1,7 +1,7 @@
 ---
 title: "ADS1 outline - Cronicas study"
 author: "Josiah Kephart"
-date: "September 20, 2016"
+date: "September 27, 2016"
 output: html_document
 ---
 
@@ -23,8 +23,14 @@ How do levels of PM2.5 and CO compare among houses who use traditional cookstove
 2. Create summary measures of pollutant levels over time
 3. Conduct analysis comparing baseline pollution across geographic locations
 
+
 ###Progress this week
-* Cleaned files names by extracting info from file names using regular expressions and transforming to standardized format (household ID, contaminant, device ID, sample date)
+* Pulled in sample of 6 files
+* Wrote script to :
+* --Create hourly averages
+* --Clean up inconsistent column names
+* --Create a time-series graph of individual samples
+* Still having difficulty pulling in entire data set
 
 ###Goals for the next week
-* Read files, look for missing/weird data, begin to create summary statistics
+* Read in all files, look for missing/weird data, begin to create summary statistics
