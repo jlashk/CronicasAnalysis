@@ -1,7 +1,7 @@
 ---
 title: "ADS1 outline - Cronicas study"
 author: "Josiah Kephart"
-date: "September 27, 2016"
+date: "October 4, 2016"
 output: html_document
 ---
 
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Cronicas is a study of household air pollution and clinical outcomes in Lima and Puno, Peru in 2014-2015. 
 
-48 hour direct-reading measurements of PM2.5 and CO at one minute temporal resolution were taken in roughly 800 households in Lima (urban) and 800 households in Puno (rural) who used traditional, biomass stoves for cooking.
+48 hour direct-reading measurements of PM2.5 and CO at one minute temporal resolution were taken in roughly 400 households in Lima (urban) and 400 households in Puno (rural) who used traditional, biomass stoves for cooking.
 
 ###Research question
 How do levels of PM2.5 and CO compare among houses who use traditional cookstoves between urban and rural areas of Peru?
@@ -25,12 +25,34 @@ How do levels of PM2.5 and CO compare among houses who use traditional cookstove
 
 
 ###Progress this week
-* Pulled in sample of 6 files
-* Wrote script to :
-* --Create hourly averages
-* --Clean up inconsistent column names
-* --Create a time-series graph of individual samples
-* Still having difficulty pulling in entire data set
+* Pulled in all CO data - added filename as column
+```{add filename}
+read_csv_filename <- function(filename){
+  ret <- fread(filename, showProgress = T, autostart = 15)
+  ret$Source <- filename #EDIT
+  ret
+}
+
+testdata <- ldply(filename, read_csv_filename); 
+```
+
+* Found appx. 5% of data to be faulty
+
+* Removed faulty data
+
+* Created hourly average and hourly max summary statistics
+
+```{hourly stats}
+funs <- c("mean", "max")
+
+sumdata <- testdata %>%
+  group_by(hiddt) %>%
+  summarise_at(vars(pm), funs) 
+head(sumdata)
+```
+
 
 ###Goals for the next week
-* Read in all files, look for missing/weird data, begin to create summary statistics
+* Follow-up with PI about faulty data
+* Read in CO data
+* Create plan for additional analysis

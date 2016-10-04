@@ -11,7 +11,6 @@
 
 <meta name="author" content="Josiah Kephart" />
 
-<meta name="date" content="2016-09-27" />
 
 <title>ADS1 outline - Cronicas study</title>
 
@@ -118,7 +117,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">ADS1 outline - Cronicas study</h1>
 <h4 class="author"><em>Josiah Kephart</em></h4>
-<h4 class="date"><em>September 27, 2016</em></h4>
+<h4 class="date"><em>October 4, 2016</em></h4>
 
 </div>
 
@@ -126,7 +125,7 @@ $(document).ready(function () {
 <div id="project-outline" class="section level2">
 <h2>Project outline</h2>
 <p>Cronicas is a study of household air pollution and clinical outcomes in Lima and Puno, Peru in 2014-2015.</p>
-<p>48 hour direct-reading measurements of PM2.5 and CO at one minute temporal resolution were taken in roughly 800 households in Lima (urban) and 800 households in Puno (rural) who used traditional, biomass stoves for cooking.</p>
+<p>48 hour direct-reading measurements of PM2.5 and CO at one minute temporal resolution were taken in roughly 400 households in Lima (urban) and 400 households in Puno (rural) who used traditional, biomass stoves for cooking.</p>
 <div id="research-question" class="section level3">
 <h3>Research question</h3>
 <p>How do levels of PM2.5 and CO compare among houses who use traditional cookstoves between urban and rural areas of Peru?</p>
@@ -142,18 +141,33 @@ $(document).ready(function () {
 <div id="progress-this-week" class="section level3">
 <h3>Progress this week</h3>
 <ul>
-<li>Pulled in sample of 6 files</li>
-<li>Wrote script to :</li>
-<li>–Create hourly averages</li>
-<li>–Clean up inconsistent column names</li>
-<li>–Create a time-series graph of individual samples</li>
-<li>Still having difficulty pulling in entire data set</li>
+<li>Pulled in all CO data - added filename as column</li>
 </ul>
+<pre class="add"><code>read_csv_filename &lt;- function(filename){
+  ret &lt;- fread(filename, showProgress = T, autostart = 15)
+  ret$Source &lt;- filename #EDIT
+  ret
+}
+
+testdata &lt;- ldply(filename, read_csv_filename); </code></pre>
+<ul>
+<li><p>Found appx. 5% of data to be faulty</p></li>
+<li><p>Removed faulty data</p></li>
+<li><p>Created hourly average and hourly max summary statistics</p></li>
+</ul>
+<pre class="hourly"><code>funs &lt;- c(&quot;mean&quot;, &quot;max&quot;)
+
+sumdata &lt;- testdata %&gt;%
+  group_by(hiddt) %&gt;%
+  summarise_at(vars(pm), funs) 
+head(sumdata)</code></pre>
 </div>
 <div id="goals-for-the-next-week" class="section level3">
 <h3>Goals for the next week</h3>
 <ul>
-<li>Read in all files, look for missing/weird data, begin to create summary statistics</li>
+<li>Follow-up with PI about faulty data</li>
+<li>Read in CO data</li>
+<li>Create plan for additional analysis</li>
 </ul>
 </div>
 </div>
