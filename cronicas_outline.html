@@ -160,7 +160,19 @@ testdata &lt;- ldply(filename, read_csv_filename); </code></pre>
 sumdata &lt;- testdata %&gt;%
   group_by(hiddt) %&gt;%
   summarise_at(vars(pm), funs) 
-head(sumdata)</code></pre>
+head(sumdata)
+
+&gt; head(sumdata)
+# A tibble: 6 × 3
+              hiddt        mean    max
+              &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;
+1 222009_05Jun15_06 0.451000000  0.451
+2 222009_05Jun15_07 9.253100000 77.100
+3 222009_05Jun15_08 1.601733333 16.430
+4 222009_05Jun15_09 0.003966667  0.031
+5 222009_05Jun15_10 0.002083333  0.034
+6 222009_05Jun15_11 0.013666667  0.286
+</code></pre>
 </div>
 <div id="goals-for-the-next-week" class="section level3">
 <h3>Goals for the next week</h3>
