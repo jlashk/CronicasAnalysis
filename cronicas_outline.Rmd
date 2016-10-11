@@ -68,3 +68,5 @@ head(sumdata)
 * Follow-up with PI about faulty data
 * Read in CO data
 * Create plan for additional analysis
+
+![Pilot PdR comparison](C:/Users/josia/Google Drive/Research/GEMS/tests/PilotPDR/pdrpilot.jpeg)

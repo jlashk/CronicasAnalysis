@@ -17,7 +17,7 @@ Cronicas is a study of household air pollution and clinical outcomes in Lima and
 ###Research question
 How do household PM2.5 levels compare between urban and rural areas of Peru?
 
-```{r urban, include = FALSE}
+```{r urban, include = FALSE, echo=FALSE}
 
 library(data.table)
 library(dplyr)
@@ -87,7 +87,7 @@ hrly <- sumdata_urban %>%
   group_by(hr) 
 ```
 
-```{r rural, include=FALSE}
+```{r rural, include=FALSE, echo=FALSE}
 
 setwd("C:/Users/josia/Google Drive/Research/CRONICAS/Data/Rural/MedicionesRural/MedicionesRural/PDR RURAL/Data")
 
