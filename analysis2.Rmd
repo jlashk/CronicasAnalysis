@@ -1,7 +1,7 @@
 ---
-title: "ADS1 outline - Cronicas study"
+title: "ADS1 analysis - Cronicas study"
 author: "Josiah Kephart"
-date: "October 4, 2016"
+date: "October 11, 2016"
 output: html_document
 ---
 
@@ -87,7 +87,7 @@ hrly <- sumdata_urban %>%
   group_by(hr) 
 ```
 
-```{r rural, include=FALSE, echo=FALSE}
+```{r rural, include=FALSE}
 
 setwd("C:/Users/josia/Google Drive/Research/CRONICAS/Data/Rural/MedicionesRural/MedicionesRural/PDR RURAL/Data")
 
