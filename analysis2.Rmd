@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ##Project outline
 
+Exposure to airborne pollutants from biomass-fueled cookstoves is responsible for nearly 5% of the global burden of disease. Nearly 3 billion households globally use biomass as their primary cooking fuel and are exposed to dangerous levels of PM2.5, CO, and other pollutants on a daily basis. 
+
 Cronicas is a study of household air pollution and clinical outcomes in Lima and Puno, Peru in 2014-2015. 
 
 48 hour direct-reading measurements of PM2.5 and CO at one minute temporal resolution were taken in roughly 400 households in Lima (urban) and 400 households in Puno (rural) who used traditional, biomass stoves for cooking.
@@ -154,11 +156,13 @@ hrly <- sumdata_rural %>%
 ###Number of Urban vs Rural samples
 
 N of urban samples: 336
+
 N of rural samples: 357
 
 ###Number of unique households Urban vs Rural
 
 Unique households in urban samples: 287
+
 Unique households in rural samples: 319
 
 ###Average, median, 95th percentile of hourly PM concentrations
