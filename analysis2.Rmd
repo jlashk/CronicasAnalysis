@@ -1,7 +1,7 @@
 ---
 title: "ADS1 analysis - Cronicas study"
 author: "Josiah Kephart"
-date: "October 11, 2016"
+date: "October 18, 2016"
 output: html_document
 ---
 
@@ -10,9 +10,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ##Project outline
 
-Exposure to airborne pollutants from biomass-fueled cookstoves is responsible for nearly 5% of the global burden of disease. Nearly 3 billion households globally use biomass as their primary cooking fuel and are exposed to dangerous levels of PM2.5, CO, and other pollutants on a daily basis. 
+Peru, along with other low and middle-income countries (LMICs) is experience a transition in the burden of disease from infectious diseases to chronic diseases. Air pollution, both ambient and indoor, is a major risk factor for chronic disease of the lungs and heart. Air pollution is known to vary by geography due to differences in both regional development and individual behaviors. Characterizing the airborne exposures faced by Peruvians in both urban and rural areas is critical to understanding the contribution of air pollution to rising chronic disease and informing environmental regulations and household interventions to reduce exposures.
 
-Cronicas is a study of household air pollution and clinical outcomes in Lima and Puno, Peru in 2014-2015. 
+To accomplish this aim, a study of household air pollution and clinical outcomes, known as, CRONICAS, was conducted in Lima and Puno, Peru in 2014-2015. 
 
 48 hour direct-reading measurements of PM2.5 and CO at one minute temporal resolution were taken in roughly 400 households in Lima (urban) and 400 households in Puno (rural) who used traditional, biomass stoves for cooking.
 
@@ -188,9 +188,11 @@ base <- ggplot() +
   ggtitle("Mean hourly median PM2.5 concentrations in urban households") 
 
 base
+ggsave("./urban.jpg", plot=last_plot())
 ```
 
 ```{r plots2, echo=FALSE}
 base + geom_line(data = hrrural, aes(hr,median, group = 1, color = "Rural households")) +
   ggtitle("Mean hourly median PM2.5 concentrations in urban and rural households") 
+ggsave("./both.jpg", plot=last_plot())
 ```
