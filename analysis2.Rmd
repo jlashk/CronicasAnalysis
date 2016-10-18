@@ -250,6 +250,16 @@ abline(h=0.35, col="green")
 dev.copy(jpeg,'urbanbox.jpg')
 dev.off()
 
+#rural box plots
+
+sumdata_rural_n <- sumdata_rural %>%
+  mutate(hr_num = as.numeric(hr))
+
+boxplot(median ~ hr, data=sumdata_rural_n, main="Median hourly PM2.5 in rural households", xlab="Hour of day",ylab="PM2.5 mg/m3")
+abline(h=0.35, col="green")
+dev.copy(jpeg,'ruralbox.jpg')
+dev.off()
+
 #urban log10
 
 sumdata_urban_log <- sumdata_urban %>%
@@ -260,15 +270,6 @@ abline(h=log10(0.35*1000), col="green")
 dev.copy(jpeg,'logurbanbox.jpg')
 dev.off()
 
-#rural box plots
-
-sumdata_rural_n <- sumdata_rural %>%
-  mutate(hr_num = as.numeric(hr))
-
-boxplot(median ~ hr, data=sumdata_rural_n, main="Median hourly PM2.5 in rural households", xlab="Hour of day",ylab="PM2.5 mg/m3")
-abline(h=0.35, col="green")
-dev.copy(jpeg,'ruralbox.jpg')
-dev.off()
 
 #rural log10
 
