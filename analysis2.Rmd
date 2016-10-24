@@ -43,8 +43,8 @@ library(plyr)
 library(stringi)
 library(ggplot2)
 
-setwd("C:/Users/josia/Google Drive/Research/CRONICAS")
-setwd("./Data/Urban/MedicionesUrbano/MedicionesUrbano/PDR URBANO/Data")
+#setwd("C:/Users/josia/Google Drive/Research/CRONICAS")
+setwd(".././Data/Urban/MedicionesUrbano/MedicionesUrbano/PDR URBANO/Data")
 
 urban_samples <- list.files(path = ".", pattern = ".CSV")
 
@@ -56,6 +56,7 @@ read_csv_filename <- function(urban_samples){
 }
 
 samples_urban <- ldply(urban_samples, read_csv_filename) 
+
 
 ##Clean up columns
 
@@ -70,8 +71,24 @@ urbandata$hour <- stri_sub(urbandata$Time,1,2)
 urbandata$hidtime <- paste(urbandata$hid,urbandata$ndate,urbandata$hour, sep = "_")
 urbandata$hiddt <- gsub(" ", "", urbandata$hidtime)
 urbandata$strtdate <- stri_sub(urbandata$Source,14,20)
+urbandata$sampleid <- paste0(urbandata$hid,urbandata$strtdate)
+
+usamp_u <- length(unique(urbandata$sampleid))
+logs_u <- length(urbandata$hiddt)
+
+logs_per_samp_u <- (logs_u)/(usamp_u)
+logs_per_samp_u
+
+hrs_per_samp_u <- logs_per_samp_u/60
+hrs_per_samp_u
+
+
+
 urbandata <- select_(urbandata, "hiddt", "pmurban","strtdate", "hid","datetime")
+
 head(urbandata)
+
+length(urbandata$hiddt)
 
 quant <- "quantile(pmurban, probs=0.95)"
 funs <- c("mean", "max", "median",quant)
@@ -180,6 +197,7 @@ Rural samples: 357
 
 ```{r summarystats, echo=FALSE}
 urbanpm
+
 ```
 **Rural PM2.5**
 ```{r summarystats2, echo=FALSE}
@@ -202,7 +220,7 @@ urbanmeanbase <- ggplot() +
   geom_line(data = hrurban, aes(hr,median, group = 1, color = "Urban households"), colour = 4) +
   ylab("Median PM2.5 mg/m3") + 
   xlab("Daily Hour") + 
-  geom_hline(yintercept = 0.035) +   
+  geom_hline(yintercept = 0.012) +   
   ggtitle("Mean hourly median PM2.5 concentrations in urban households") 
 ```
 
@@ -236,7 +254,7 @@ logurb_base <- ggplot() +
   geom_line(data = log10ug_urb, aes(hr,log10urban, group = 1, color = "Urban households"), colour = 4) +
   ylab("Log10 PM2.5 ug/m3") + 
   xlab("Daily Hour") + 
-  geom_hline(yintercept = log10(0.035*1000), col="black") +   
+  geom_hline(yintercept = log10(0.012*1000), col="black") +   
   ggtitle("Mean hourly median PM2.5 concentrations in urban households") 
 logurb_base
 
@@ -259,7 +277,7 @@ sumdata_urban_n <- sumdata_urban %>%
 
 #jpeg('urbanbox.jpg')
 boxplot(median ~ hr, data=sumdata_urban_n, main="Median hourly PM2.5 in urban households", xlab="Hour of day",ylab="PM2.5 mg/m3", col="blue")
-abline(h=0.35, col="green")
+abline(h=0.012, col="green")
 dev.copy(jpeg,'urbanbox.jpg')
 dev.off()
 
@@ -269,7 +287,7 @@ sumdata_rural_n <- sumdata_rural %>%
   mutate(hr_num = as.numeric(hr))
 
 boxplot(median ~ hr, data=sumdata_rural_n, main="Median hourly PM2.5 in rural households", xlab="Hour of day",ylab="PM2.5 mg/m3")
-abline(h=0.35, col="green")
+abline(h=0.012, col="green")
 dev.copy(jpeg,'ruralbox.jpg')
 dev.off()
 
@@ -279,7 +297,7 @@ sumdata_urban_log <- sumdata_urban %>%
   mutate(logurban = log10(median*1000+1))
 
 boxplot(logurban ~ hr, data=sumdata_urban_log, main="Median hourly PM2.5 in urban households", xlab="Hour of day",ylab="Log10 PM2.5 ug/m3")
-abline(h=log10(0.35*1000), col="green")
+abline(h=log10(0.012*1000), col="green")
 dev.copy(jpeg,'logurbanbox.jpg')
 dev.off()
 
@@ -290,7 +308,7 @@ sumdata_rural_log <- sumdata_rural %>%
   mutate(logrural = log10(median*1000+1))
 
 boxplot(logrural ~ hr, data=sumdata_rural_log, main="Median hourly PM2.5 in rural households", xlab="Hour of day",ylab="Log10 PM2.5 ug/m3")
-abline(h=log10(0.35*1000), col="green")
+abline(h=log10(0.012*1000), col="green")
 dev.copy(jpeg,'logruralbox.jpg')
 dev.off()
 
