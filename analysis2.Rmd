@@ -1,67 +1,55 @@
 ---
-title: "Household PM2.5 concentrations in rural and urban households in Peru"
+title: "Households PM2.5 concentrations in rural and urban Peru"
 author: "Josiah Kephart"
-date: "October 18, 2016"
+date: "October 24, 2016"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-###Introduction
-
-Peru, along with other low and middle-income countries (LMICs) is experience a transition in the burden of disease from infectious diseases to chronic diseases. Air pollution, both ambient and indoor, is a major risk factor for chronic disease of the lungs and heart. Air pollution is known to vary by geography due to differences in both regional development and household behaviors. Characterizing the airborne exposures faced by Peruvians in both urban and rural areas is critical to understanding the contribution of air pollution to rising chronic disease and to inform interventions that reduce exposures.  
-
-While remote sensing and ambient measurements can be used to model ambient air pollution, less is known about indoor, household air pollution in Peru. Because many people spend the majority of their times indoors, understanding household air pollution (HAP) is critically needed to assess total air pollution exposure and the connections between air pollution exposure and chronic disease.  
-
-###Methods
-
-####Data Collection  
-
-To accomplish this aim, a study of household air pollution and clinical outcomes, known as CRONICAS, was conducted in Lima and Puno, Peru in 2014-2015. Using a personal DataRAM (PdR) monitor, PM2.5 was measured for 48 hours at one-minute temporal resolution in roughly 336 households in Lima (urban) and 357 households in Puno (rural).  
-
-####Exploratory Analysis
-
-Various plots and graphs were used to perform exploratory data analysis. PM levels were alternately transformed to a log10 scale to assist in visualization and comparison across geographic groups. 
-
-####Reproducibility
-
-To provide reproducibility, all analyses were recorded in a R markdown file. Data has been provided in a zipped folder. 
-
-####Results
-
-All data were initially provided in one-minute temporal resolution and were summarized by household and hour for this analysis.
+###Load libraries/data/create new variables
 
 
+```{r loadData, message=FALSE, warning=FALSE}
 
-
-```{r urban, include = FALSE}
-
+#load libraries
 library(data.table)
 library(dplyr)
 library(plyr)
 library(stringi)
 library(ggplot2)
+library(xtable)
+library(pander)
 
-#setwd("C:/Users/josia/Google Drive/Research/CRONICAS")
-setwd(".././Data/Urban/MedicionesUrbano/MedicionesUrbano/PDR URBANO/Data")
 
-urban_samples <- list.files(path = ".", pattern = ".CSV")
+#load data
+urban_files <- list.files(path = "../AnalysisData/PDRUrbanData", pattern = ".CSV")
+rural_files <- list.files(path = "../AnalysisData/PDRRuralData", pattern = ".CSV")
 
-##Add household ID to data
-read_csv_filename <- function(urban_samples){
-  ret <- fread(urban_samples, showProgress = T, autostart = 15)
-  ret$Source <- urban_samples 
+##Add household ID to data and combine files into single datasets
+read_csv_urban <- function(urban_files){
+  ret <- fread(file.path("../AnalysisData/PDRUrbanData",urban_files), showProgress = T, autostart = 15)
+  ret$Source <- urban_files 
   ret
 }
+urbanraw <- ldply(urban_files, read_csv_urban) 
+urbandata <- urbanraw #this will be the working urban dataset
 
-samples_urban <- ldply(urban_samples, read_csv_filename) 
+read_csv_rural <- function(rural_files){
+  ret <- fread(file.path("../AnalysisData/PDRRuralData",rural_files), showProgress = T, autostart = 15)
+  ret$Source <- rural_files 
+  ret
+}
+ruralraw <- ldply(rural_files, read_csv_rural) 
+ruraldata <- ruralraw #this will be the working rural dataset
+```
 
+##Clean up and create new columns
+```{r cleancolumns, warning=FALSE}
 
-##Clean up columns
-
-urbandata <- samples_urban
+#Fix inconsistent column names
 urbandata$pmurban <- rowSums(urbandata[,c("Avg.(mg/m³)", "Avg.(mg/m3)")], na.rm = T)
+ruraldata$pmrural <- rowSums(ruraldata[,c("Avg.(mg/m³)", "Avg.(mg/m3)")], na.rm = T)
+
+#Isolate information from the filename, build date fields
 urbandata$hid <- stri_sub(urbandata$Source,7,12)
 urbandata$yr <- stri_sub(urbandata$Source, 19,20)
 urbandata$ndate <- paste(urbandata$Date,urbandata$yr)
@@ -72,76 +60,8 @@ urbandata$hidtime <- paste(urbandata$hid,urbandata$ndate,urbandata$hour, sep = "
 urbandata$hiddt <- gsub(" ", "", urbandata$hidtime)
 urbandata$strtdate <- stri_sub(urbandata$Source,14,20)
 urbandata$sampleid <- paste0(urbandata$hid,urbandata$strtdate)
+urbandata <- select_(urbandata, "hiddt", "pmurban","sampleid", "hid","datetime")
 
-usamp_u <- length(unique(urbandata$sampleid))
-logs_u <- length(urbandata$hiddt)
-
-logs_per_samp_u <- (logs_u)/(usamp_u)
-logs_per_samp_u
-
-hrs_per_samp_u <- logs_per_samp_u/60
-hrs_per_samp_u
-
-
-
-urbandata <- select_(urbandata, "hiddt", "pmurban","strtdate", "hid","datetime")
-
-head(urbandata)
-
-length(urbandata$hiddt)
-
-quant <- "quantile(pmurban, probs=0.95)"
-funs <- c("mean", "max", "median",quant)
-
-sumdata_urban <- urbandata %>%
-  group_by(hiddt) %>%
-  summarise_at(vars(pmurban), funs) %>% 
-  mutate(hid = stri_sub(hiddt, 1,6)) %>%
-  mutate(hr = stri_sub(hiddt, -2,-1)) 
-  
-head(sumdata_urban)
-  
-
-#create columns in summarized data set 
-
-
-unihid_urban <- unique(sumdata_urban$hid)
-length(urban_samples)
-length(unihid_urban)
-
-urbanpm <- sumdata_urban %>%
-  summarise(mean = mean(mean)) 
-  
-urbanpm$median <- sumdata_urban %>%
-  summarise(median = mean(median)) 
-
-urbanpm$perc95 <- sumdata_urban %>%
-  summarise(perc95 = max(quantile))
-
-urbanpm$sd <- sumdata_urban %>%
-  summarise(sd = sd(mean))
-
-```
-
-```{r rural, include=FALSE}
-
-setwd("C:/Users/josia/Google Drive/Research/CRONICAS/Data/Rural/MedicionesRural/MedicionesRural/PDR RURAL/Data")
-
-rural_samples <- list.files(path = ".", pattern = ".CSV")
-
-##Add household ID to data
-read_csv_filename <- function(rural_samples){
-  ret <- fread(rural_samples, showProgress = T, autostart = 15)
-  ret$Source <- rural_samples #EDIT
-  ret
-}
-
-samples_rural <- ldply(rural_samples, read_csv_filename); 
-
-##Clean up columns
-
-ruraldata <- samples_rural
-ruraldata$pmrural <- rowSums(ruraldata[,c("Avg.(mg/m³)", "Avg.(mg/m3)")], na.rm = T)
 ruraldata$hid <- stri_sub(ruraldata$Source,7,12)
 ruraldata$yr <- stri_sub(ruraldata$Source, 19,20)
 ruraldata$ndate <- paste(ruraldata$Date,ruraldata$yr)
@@ -151,61 +71,111 @@ ruraldata$hour <- stri_sub(ruraldata$Time,1,2)
 ruraldata$hidtime <- paste(ruraldata$hid,ruraldata$ndate,ruraldata$hour, sep = "_")
 ruraldata$hiddt <- gsub(" ", "", ruraldata$hidtime)
 ruraldata$strtdate <- stri_sub(ruraldata$Source,14,20)
-ruraldata <- select_(ruraldata, "hiddt", "pmrural","strtdate", "hid","datetime")
-head(ruraldata)
+ruraldata$sampleid <- paste0(ruraldata$hid,ruraldata$strtdate)
+ruraldata <- select_(ruraldata, "hiddt", "pmrural","sampleid", "hid","datetime")
 
-#Create summarized data set by ID & hour
+head(urbandata,3)
+head(ruraldata,3)
+```
 
-quant <- "quantile(pmrural, probs=0.95)"
-funs <- c("mean", "max", "median",quant)
+##Exploratory Data Analysis
+
+```{r how_many_logs}
+
+#Calculate number and hours of measurements per sample: urban
+samp_u <- length(unique(urbandata$sampleid))
+logs_u <- length(urbandata$hiddt)
+
+logs_per_samp_u <- (logs_u)/(samp_u)
+logs_per_samp_u # Measurements per sample: urban
+
+hrs_per_samp_u <- logs_per_samp_u/60
+hrs_per_samp_u # Measurement-hours per sample: urban
+
+#Calculate number of measurements per sample: rural
+samp_r <- length(unique(ruraldata$sampleid))
+logs_r <- length(ruraldata$hiddt)
+
+logs_per_samp_r <- (logs_r)/(samp_r)
+logs_per_samp_r # Measurements per sample: rural
+
+hrs_per_samp_r <- logs_per_samp_r/60
+hrs_per_samp_r # Measurement-hours per sample: rural
+```
+
+###Summarize data by hour (mean, max, median, 95th percentile)
+
+```{r summarizehour}
+
+quant_u <- "quantile(pmurban, probs=0.95)"
+quant_r <- "quantile(pmrural, probs=0.95)"
+
+funs_u <- c("mean", "max", "median",quant_u)
+funs_r <- c("mean", "max", "median",quant_r)
+
+
+sumdata_urban <- urbandata %>%
+  group_by(hiddt) %>%
+  summarise_at(vars(pmurban), funs_u) %>% 
+  mutate(hid = stri_sub(hiddt, 1,6)) %>%
+  mutate(hr = stri_sub(hiddt, -2,-1)) 
 
 sumdata_rural <- ruraldata %>%
   group_by(hiddt) %>%
-  summarise_at(vars(pmrural), funs) %>% 
+  summarise_at(vars(pmrural), funs_r) %>% 
   mutate(hid = stri_sub(hiddt, 1,6)) %>%
   mutate(hr = stri_sub(hiddt, -2,-1)) 
   
-head(sumdata_rural)
+head(sumdata_urban,3)
+head(sumdata_rural,3)
+  
 
-#create columns in summarized data set 
+#create summary stats for hourly-summarized data 
 
-unihid_rural <- unique(sumdata_rural$hid)
-length(samples_rural)
-length(unihid_rural)
+#urban
+urbanpm <- sumdata_urban %>%
+  summarise(mean = mean(median)) 
 
+urbanpm$median <- sumdata_urban %>%
+  summarise(median = median(median)) 
+
+urbanpm$perc95 <- sumdata_urban %>%
+  summarise(perc95 = quantile(median,probs = 0.95))
+
+urbanpm$sd <- sumdata_urban %>%
+  summarise(sd = sd(median))
+
+#rural
 ruralpm <- sumdata_rural %>%
-  summarise(mean = mean(mean)) 
+  summarise(mean = mean(median)) 
   
 ruralpm$median <- sumdata_rural %>%
-  summarise(median = mean(median)) 
+  summarise(median = median(median)) 
 
 ruralpm$perc95 <- sumdata_rural %>%
-  summarise(perc95 = max(quantile))
+  summarise(perc95 = quantile(median,probs = 0.95))
 
 ruralpm$sd <- sumdata_rural %>%
-  summarise(sd = sd(mean))
+  summarise(sd = sd(median))
+
+
+head(urbanpm)
+head(ruralpm)
+```
+####Summary statistics 
+
+```{r sumtable}
+sumstats <- bind_rows(urbanpm,ruralpm)
+row.names(sumstats) <- c("Urban PM2.5","Rural PM2.5")
+colnames(sumstats) <- c("Mean","Median","95th Percentile","Standard Deviation")
+
+pander(sumstats)
 
 ```
-#####Sample size
 
-Urban samples: 336
+####Summarize data by daily hour
 
-Rural samples: 357
-
-#####Summary statistics of hourly PM concentrations
-**Urban PM2.5**
-
-```{r summarystats, echo=FALSE}
-urbanpm
-
-```
-**Rural PM2.5**
-```{r summarystats2, echo=FALSE}
-ruralpm
-```
-
-
-```{r plotsmean, echo=FALSE}
+```{r plotsmean, message=FALSE}
 hrurban <- sumdata_urban %>%
   group_by(hr) %>%
   summarise_at(vars(median),mean)
@@ -213,84 +183,42 @@ hrurban <- sumdata_urban %>%
 hrrural <- sumdata_rural %>%
   group_by(hr) %>%
   summarise_at(vars(median),mean)
+```
+
+###Generate plots
+
+####Line plots
+```{r ploturbanmean, message=FALSE}
 
 #Plot mean hourly household median
 
-urbanmeanbase <- ggplot() + 
-  geom_line(data = hrurban, aes(hr,median, group = 1, color = "Urban households"), colour = 4) +
-  ylab("Median PM2.5 mg/m3") + 
-  xlab("Daily Hour") + 
-  geom_hline(yintercept = 0.012) +   
-  ggtitle("Mean hourly median PM2.5 concentrations in urban households") 
+p <- ggplot(data = hrurban, aes(x=hr,y=median, color = "Urban PM2.5", group = 1)) 
+p <- p + geom_line(aes(hr,median, color="Urban PM2.5"))
+Standard <- data.frame( x = c(-Inf, Inf), y = 0.012, Standard = factor(0.012) )
+p <- p + geom_line(aes(x, y, linetype = Standard), Standard, colour = "green")
+p <- p + ylab("Median PM2.5 mg/m3") 
+p <- p + xlab("Daily Hour") 
+p <- p + scale_color_manual(values = c("blue"))
+p <- p + ggtitle("Mean hourly median PM2.5 concentrations in urban households")
+p <- p + theme(legend.position = c(0.9,0.8))
+p <- p + guides(colour = guide_legend(title = "PM2.5"))
+p
+
+ggsave("./Figures/urbanmean.jpg", plot=last_plot())
 ```
 
-```{r ploturbanmean, echo=FALSE}
-urbanmeanbase
-```
-
-```{r save1, echo=FALSE}
-ggsave("./urbanmean.jpg", plot=last_plot())
-```
-
-```{r plotsmedian2, echo=FALSE}
-urbanmeanbase + geom_line(data = hrrural, aes(hr,median, group = 1, color = "Rural households")) +
+```{r plotbothmean, message=FALSE}
+p + geom_line(data = hrrural, aes(hr,median, group = 1, color = "Rural PM2.5")) +
+  scale_color_manual(labels = c("Rural PM2.5","Urban PM2.5"), values = c("red","blue")) +
+  theme(legend.position = c(0.9,0.7)) +
   ggtitle("Mean hourly median PM2.5 concentrations in urban and rural households") 
-ggsave("./bothmean.jpg", plot=last_plot())
+
+ggsave("./Figures/bothmean.jpg", plot=last_plot())
 ```
 
-```{r plotsmedian3, echo=FALSE}
+####Plot boxplots
 
-#Create log10 scaled graph
-
-log10ug_urb <- hrurban %>%
-  mutate(log10urban = log10(median*1000)) %>%
-  select(log10urban, hr)
-
-log10ug_rur <- hrrural %>%
-  mutate(log10rural = log10(median*1000)) %>%
-  select(log10rural, hr)
-
-logurb_base <- ggplot() + 
-  geom_line(data = log10ug_urb, aes(hr,log10urban, group = 1, color = "Urban households"), colour = 4) +
-  ylab("Log10 PM2.5 ug/m3") + 
-  xlab("Daily Hour") + 
-  geom_hline(yintercept = log10(0.012*1000), col="black") +   
-  ggtitle("Mean hourly median PM2.5 concentrations in urban households") 
-logurb_base
-
-ggsave("./logurbanmean.jpg", plot=last_plot())
-```
-
-```{r plotsmedian4, echo=FALSE}
-logurb_base + geom_line(data = log10ug_rur, aes(hr,log10rural, group = 1, color = "Rural households")) +
-  ggtitle("Mean hourly median PM2.5 concentrations in urban and rural households") 
-ggsave("./logbothmean.jpg", plot=last_plot())
-
-```
-
-```{r boxplots, echo=FALSE}
-
-#urban box plots
-
-sumdata_urban_n <- sumdata_urban %>%
-  mutate(hr_num = as.numeric(hr))
-
-#jpeg('urbanbox.jpg')
-boxplot(median ~ hr, data=sumdata_urban_n, main="Median hourly PM2.5 in urban households", xlab="Hour of day",ylab="PM2.5 mg/m3", col="blue")
-abline(h=0.012, col="green")
-dev.copy(jpeg,'urbanbox.jpg')
-dev.off()
-
-#rural box plots
-
-sumdata_rural_n <- sumdata_rural %>%
-  mutate(hr_num = as.numeric(hr))
-
-boxplot(median ~ hr, data=sumdata_rural_n, main="Median hourly PM2.5 in rural households", xlab="Hour of day",ylab="PM2.5 mg/m3")
-abline(h=0.012, col="green")
-dev.copy(jpeg,'ruralbox.jpg')
-dev.off()
-
+```{r boxplots, message=FALSE}
 #urban log10
 
 sumdata_urban_log <- sumdata_urban %>%
@@ -298,7 +226,8 @@ sumdata_urban_log <- sumdata_urban %>%
 
 boxplot(logurban ~ hr, data=sumdata_urban_log, main="Median hourly PM2.5 in urban households", xlab="Hour of day",ylab="Log10 PM2.5 ug/m3")
 abline(h=log10(0.012*1000), col="green")
-dev.copy(jpeg,'logurbanbox.jpg')
+legend("topleft", inset=.02, "EPA Standard", col="green",lty=1,horiz=TRUE, cex=0.8, box.lty = 0)
+dev.copy(jpeg,'./Figures/logurbanbox.jpg')
 dev.off()
 
 
@@ -309,10 +238,9 @@ sumdata_rural_log <- sumdata_rural %>%
 
 boxplot(logrural ~ hr, data=sumdata_rural_log, main="Median hourly PM2.5 in rural households", xlab="Hour of day",ylab="Log10 PM2.5 ug/m3")
 abline(h=log10(0.012*1000), col="green")
-dev.copy(jpeg,'logruralbox.jpg')
+legend("topleft", inset=.02, "EPA Standard", col="green",lty=1,horiz=TRUE, cex=0.8, box.lty = 0)
+dev.copy(jpeg,'./Figures/logruralbox.jpg')
 dev.off()
 
 
 ```
-
-####Conclusions
