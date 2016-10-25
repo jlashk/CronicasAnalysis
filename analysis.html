@@ -127,8 +127,8 @@ $(document).ready(function () {
 <h3>Load libraries/data/create new variables</h3>
 <pre class="r"><code>#load libraries
 library(data.table)
-library(dplyr)
 library(plyr)
+library(dplyr)
 library(stringi)
 library(ggplot2)
 library(xtable)
@@ -161,8 +161,11 @@ ruraldata &lt;- ruralraw #this will be the working rural dataset</code></pre>
 <div id="clean-up-and-create-new-columns" class="section level2">
 <h2>Clean up and create new columns</h2>
 <pre class="r"><code>#Fix inconsistent column names
-urbandata$pmurban &lt;- rowSums(urbandata[,c(&quot;Avg.(mg/m³)&quot;, &quot;Avg.(mg/m3)&quot;)], na.rm = T)
-ruraldata$pmrural &lt;- rowSums(ruraldata[,c(&quot;Avg.(mg/m³)&quot;, &quot;Avg.(mg/m3)&quot;)], na.rm = T)
+colnames(urbandata) &lt;- c(&quot;Point&quot;,&quot;Date&quot;,&quot;Time&quot;,&quot;pmurban1&quot;,&quot;Source&quot;,&quot;pmurban2&quot;)
+urbandata$pmurban &lt;- rowSums(urbandata[,c(&quot;pmurban1&quot;, &quot;pmurban2&quot;)], na.rm = T)
+
+colnames(ruraldata) &lt;- c(&quot;Point&quot;,&quot;Date&quot;,&quot;Time&quot;,&quot;pmrural1&quot;,&quot;Source&quot;,&quot;pmrural2&quot;)
+ruraldata$pmrural &lt;- rowSums(ruraldata[,c(&quot;pmrural1&quot;, &quot;pmrural2&quot;)], na.rm = T)
 
 #Isolate information from the filename, build date fields
 urbandata$hid &lt;- stri_sub(urbandata$Source,7,12)
@@ -287,25 +290,30 @@ ruralpm$sd &lt;- sumdata_rural %&gt;%
 
 
 head(urbanpm)</code></pre>
-<pre><code>##         mean median perc95       sd
-## 1 0.01621484  0.005  0.048 0.132402</code></pre>
+<pre><code>## # A tibble: 1 × 4
+##         mean           median           perc95               sd
+##        &lt;dbl&gt;         &lt;tibble&gt;         &lt;tibble&gt;         &lt;tibble&gt;
+## 1 0.01621484 &lt;tibble [1 × 1]&gt; &lt;tibble [1 × 1]&gt; &lt;tibble [1 × 1]&gt;</code></pre>
 <pre class="r"><code>head(ruralpm)</code></pre>
-<pre><code>##        mean median   perc95       sd
-## 1 0.6638507  0.003 2.066075 5.693289</code></pre>
+<pre><code>## # A tibble: 1 × 4
+##        mean           median           perc95               sd
+##       &lt;dbl&gt;         &lt;tibble&gt;         &lt;tibble&gt;         &lt;tibble&gt;
+## 1 0.6638507 &lt;tibble [1 × 1]&gt; &lt;tibble [1 × 1]&gt; &lt;tibble [1 × 1]&gt;</code></pre>
 <div id="summary-statistics" class="section level4">
 <h4>Summary statistics</h4>
 <pre class="r"><code>sumstats &lt;- bind_rows(urbanpm,ruralpm)
-row.names(sumstats) &lt;- c(&quot;Urban PM2.5&quot;,&quot;Rural PM2.5&quot;)
-colnames(sumstats) &lt;- c(&quot;Mean&quot;,&quot;Median&quot;,&quot;95th Percentile&quot;,&quot;Standard Deviation&quot;)
+row.names(sumstats) &lt;- c(&quot;Urban PM2.5&quot;,&quot;Rural PM2.5&quot;)</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre class="r"><code>colnames(sumstats) &lt;- c(&quot;Mean&quot;,&quot;Median&quot;,&quot;95th Percentile&quot;,&quot;Standard Deviation&quot;)
 
 pander(sumstats)</code></pre>
 <table>
 <colgroup>
-<col width="24%"></col>
-<col width="10%"></col>
-<col width="12%"></col>
-<col width="24%"></col>
-<col width="27%"></col>
+<col width="23%"></col>
+<col width="14%"></col>
+<col width="11%"></col>
+<col width="23%"></col>
+<col width="26%"></col>
 </colgroup>
 <thead>
 <tr class="header">
@@ -319,17 +327,17 @@ pander(sumstats)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="center"><strong>Urban PM2.5</strong></td>
-<td align="center">0.01621</td>
+<td align="center">0.01621484</td>
 <td align="center">0.005</td>
 <td align="center">0.048</td>
-<td align="center">0.1324</td>
+<td align="center">0.132402</td>
 </tr>
 <tr class="even">
 <td align="center"><strong>Rural PM2.5</strong></td>
-<td align="center">0.6639</td>
+<td align="center">0.66385067</td>
 <td align="center">0.003</td>
-<td align="center">2.066</td>
-<td align="center">5.693</td>
+<td align="center">2.066075</td>
+<td align="center">5.693289</td>
 </tr>
 </tbody>
 </table>

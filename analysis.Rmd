@@ -12,8 +12,8 @@ output: html_document
 
 #load libraries
 library(data.table)
-library(dplyr)
 library(plyr)
+library(dplyr)
 library(stringi)
 library(ggplot2)
 library(xtable)
@@ -48,8 +48,11 @@ ruraldata <- ruralraw #this will be the working rural dataset
 ```{r cleancolumns, warning=FALSE}
 
 #Fix inconsistent column names
-urbandata$pmurban <- rowSums(urbandata[,c("Avg.(mg/m³)", "Avg.(mg/m3)")], na.rm = T)
-ruraldata$pmrural <- rowSums(ruraldata[,c("Avg.(mg/m³)", "Avg.(mg/m3)")], na.rm = T)
+colnames(urbandata) <- c("Point","Date","Time","pmurban1","Source","pmurban2")
+urbandata$pmurban <- rowSums(urbandata[,c("pmurban1", "pmurban2")], na.rm = T)
+
+colnames(ruraldata) <- c("Point","Date","Time","pmrural1","Source","pmrural2")
+ruraldata$pmrural <- rowSums(ruraldata[,c("pmrural1", "pmrural2")], na.rm = T)
 
 #Isolate information from the filename, build date fields
 urbandata$hid <- stri_sub(urbandata$Source,7,12)
