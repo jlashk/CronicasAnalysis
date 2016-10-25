@@ -18,6 +18,8 @@ library(stringi)
 library(ggplot2)
 library(xtable)
 library(pander)
+library(pheatmap)
+library(RColorBrewer)
 
 
 #load data
@@ -242,5 +244,66 @@ legend("topleft", inset=.02, "EPA Standard", col="green",lty=1,horiz=TRUE, cex=0
 dev.copy(jpeg,'./Figures/logruralbox.jpg')
 dev.off()
 
+
+```
+
+###Plot heat maps
+```{r heatmaps, message=FALSE, warning=FALSE}
+
+#format rural data for heatmap
+num_r <- as.data.frame(sumdata_rural_log)
+nums_r <- num_r %>%
+  select(hid, hr, logrural)
+wide <- reshape(nums_r, idvar = "hid", timevar = "hr", direction = "wide")
+wide2 <- wide %>%
+  select(-hid) 
+wide3 <- wide2[,c(19:24,0:18)]
+ruralmat <- as.matrix(wide3)
+
+#format urban data for heatmap
+
+num_u <- as.data.frame(sumdata_urban_log)
+nums_u <- num_u %>%
+  select(hid, hr, logurban)
+wide_u <- reshape(nums_u, idvar = "hid", timevar = "hr", direction = "wide")
+wide2_u <- wide_u %>%
+  select(-hid) 
+wide3_u <- wide2_u[,c(10:24,0:9)]
+urbanmat <- as.matrix(wide3_u)
+
+collabels <- c("00","01","02","03","04","05","06","07","08","09",(10:23))
+heatbrks <- c(1:3)
+heatlbs <- c("1","2","3 log10 mg/m3")
+
+pheatmap(urbanmat, 
+         cluster_rows = T, cluster_cols = F,
+         treeheight_row = 0,
+         labels_col = collabels,
+         legend = T,
+         legend_breaks = heatbrks,
+         legend_labels = heatlbs,
+         color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100),         
+         main="Median PM2.5 levels by hour of day: urban households",
+         silent = FALSE,
+         show_rownames = FALSE)
+dev.copy(jpeg,"./Figures/urbanheat.jpg")
+dev.off()
+
+heatbrks_r <- c(1:5)
+heatlbs_r <- c("1","2","3","4","5 log10 mg/m3")
+
+pheatmap(ruralmat, 
+         cluster_rows = T, cluster_cols = F,
+         treeheight_row = 0,
+         labels_col = collabels,
+         legend = T,
+         legend_breaks = heatbrks_r,
+         legend_labels = heatlbs_r,
+         color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100),         
+         main="Median PM2.5 levels by hour of day: rural households",
+         silent = FALSE,
+         show_rownames = FALSE)
+dev.copy(jpeg,"./Figures/ruralheat.jpg")
+dev.off()
 
 ```
