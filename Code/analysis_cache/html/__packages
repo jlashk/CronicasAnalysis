@@ -1,0 +1,10 @@
+base
+data.table
+plyr
+dplyr
+stringi
+ggplot2
+xtable
+pander
+pheatmap
+RColorBrewer
